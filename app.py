@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 import config
 from routes.catalogs import catalogs_bp
@@ -11,8 +12,10 @@ app = Flask(__name__)
 
 @app.before_request
 def check_auth():
-    # Allow CORS preflight through unauthenticated
+    # Allow CORS preflight and health check through unauthenticated
     if request.method == 'OPTIONS':
+        return None
+    if request.path == '/api/v1/health':
         return None
     key = request.headers.get('X-API-Key')
     if not config.API_KEY or key != config.API_KEY:
@@ -24,6 +27,16 @@ app.register_blueprint(manifests_bp, url_prefix='/api/v1/manifests')
 app.register_blueprint(pkgsinfo_bp, url_prefix='/api/v1/pkgsinfo')
 app.register_blueprint(pkgs_bp, url_prefix='/api/v1/pkgs')
 app.register_blueprint(icons_bp, url_prefix='/api/v1/icons')
+
+
+@app.route('/api/v1/health', methods=['GET'])
+def health():
+    repo_exists = os.path.isdir(config.MUNKI_REPO_PATH)
+    return jsonify({
+        'status': 'ok' if repo_exists else 'degraded',
+        'repo_path': config.MUNKI_REPO_PATH,
+        'repo_exists': repo_exists
+    })
 
 
 @app.errorhandler(404)
