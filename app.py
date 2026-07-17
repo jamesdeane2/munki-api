@@ -7,6 +7,7 @@ from routes.pkgsinfo import pkgsinfo_bp
 from routes.pkgs import pkgs_bp
 from routes.icons import icons_bp
 from routes.maintenance import maintenance_bp
+from routes.enrol import enrol_bp
 
 app = Flask(__name__)
 
@@ -29,6 +30,7 @@ app.register_blueprint(pkgsinfo_bp, url_prefix='/api/v1/pkgsinfo')
 app.register_blueprint(pkgs_bp, url_prefix='/api/v1/pkgs')
 app.register_blueprint(icons_bp, url_prefix='/api/v1/icons')
 app.register_blueprint(maintenance_bp, url_prefix='/api/v1/maintenance')
+app.register_blueprint(enrol_bp, url_prefix='/api/v1/enrol')
 
 
 @app.route('/api/v1/health', methods=['GET'])
